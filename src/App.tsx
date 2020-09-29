@@ -1,7 +1,8 @@
 import "@netless/canvas-polyfill";
+import {IframeBridge, IframeWrapper} from "netless-iframe-bridge-test";
 import React, { useEffect, useRef } from 'react';
 import dsBridge from "dsbridge";
-import {WhiteWebSdk, PlayerPhase, RoomPhase, Room, Player, createPlugins, setAsyncModuleLoadMode, AsyncModuleLoadMode, MediaType} from "white-web-sdk";
+import {WhiteWebSdk, PlayerPhase, RoomPhase, Room, Player, createPlugins, setAsyncModuleLoadMode, AsyncModuleLoadMode} from "white-web-sdk";
 import {NativeSDKConfig, NativeJoinRoomParams, NativeReplayParams} from "./utils/ParamTypes";
 import {registerPlayer, registerRoom, Rtc} from "./bridge";
 import {videoPlugin} from "@netless/white-video-plugin";
@@ -115,6 +116,8 @@ export default function App() {
         try {
             sdk = new WhiteWebSdk({
                 ...restConfig,
+                invisiblePlugins: [IframeBridge as any],
+                wrappedComponents: [IframeWrapper],
                 plugins: plugins,
                 urlInterrupter: urlInterrupter,
                 onWhiteSetupFailed: e => {
@@ -292,12 +295,12 @@ export default function App() {
         // 不推荐用户使用这种预加载，native 端使用 zip 包的形式
     }
 
-    function onPPTMediaPlay(shapeId: string, type: MediaType) {
+    function onPPTMediaPlay(shapeId: string, type: any) {
         logger("onPPTMediaPlay", shapeId, type);
         dsBridge.call("sdk.onPPTMediaPlay", {shapeId, type});
     }
     
-    function onPPTMediaPause(shapeId: string, type: MediaType) {
+    function onPPTMediaPause(shapeId: string, type: any) {
         logger("onPPTMediaPause", shapeId, type);
         dsBridge.call("sdk.onPPTMediaPause", {shapeId, type});
     }
